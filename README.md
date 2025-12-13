@@ -1,9 +1,49 @@
-# WTWR (What to Wear?): Back End
-The back-end project is focused on creating a server for the WTWR application. You’ll gain a deeper understanding of how to work with databases, set up security and testing, and deploy web applications on a remote machine. The eventual goal is to create a server with an API and user authorization.
-## Running the Project
-`npm run start` — to launch the server 
+🛠 Technologies & Techniques Used
 
-`npm run dev` — to launch the server with the hot reload feature
+Back-End Stack
 
-### Testing
-Before committing your code, make sure you edit the file `sprint.txt` in the root folder. The file `sprint.txt` should contain the number of the sprint you're currently working on. For ex. 12
+Node.js — server-side JavaScript runtime
+
+Express.js — framework for building the API and route handling
+
+MongoDB — NoSQL database storing users and clothing items
+
+Mongoose — ODM used to define schemas, models, and validation
+
+Development Tools
+
+Nodemon — auto-restart server on file changes (npm run dev)
+
+ESLint (Airbnb Style Guide) — enforces clean, consistent code
+
+Prettier — automatic code formatting
+
+Validator.js — validates URLs for avatar and image fields
+
+Git & GitHub — version control and continuous integration (GitHub Actions)
+
+Architecture
+
+Models — MongoDB schemas for User and ClothingItem
+
+Controllers — logic for CRUD operations and error handling
+
+Routes — clean separation for /users and /items endpoints
+
+Utilities — central storage of reusable constants (e.g., error codes)
+
+Error Handling
+
+Centralized error handler using Express middleware
+
+Custom status code constants
+
+Validation (400), Not Found (404), CastError handling, and protected 500 errors
+
+Consistent JSON responses with a message field only
+
+Security Foundations (Early Stages of WTWR Project)
+
+Temporary user authorization placeholder (req.user)
+
+Structured to support JWT-based authentication in later sprints
