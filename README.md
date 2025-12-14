@@ -1,49 +1,35 @@
-🛠 Technologies & Techniques Used
+## 🛠 Technologies & Techniques Used
 
-Back-End Stack
+### Back-End Stack
 
-Node.js — server-side JavaScript runtime
+- **Node.js** — server-side JavaScript runtime
+- **Express.js** — framework for building RESTful APIs and handling routing
+- **MongoDB** — NoSQL database for storing users and clothing items
+- **Mongoose** — ODM for defining schemas, models, and validation logic
 
-Express.js — framework for building the API and route handling
+### Development Tools
 
-MongoDB — NoSQL database storing users and clothing items
+- **Nodemon** — automatic server restart during development (`npm run dev`)
+- **ESLint (Airbnb Style Guide)** — enforces clean and consistent code standards
+- **Prettier** — automatic code formatting
+- **Validator.js** — validates URL fields (avatars and item images)
+- **Git & GitHub** — version control and continuous integration via GitHub Actions
 
-Mongoose — ODM used to define schemas, models, and validation
+### Application Architecture
 
-Development Tools
+- **Models** — MongoDB schemas for `User` and `ClothingItem`
+- **Controllers** — business logic for CRUD operations and error handling
+- **Routes** — clean separation of `/users` and `/items` endpoints
+- **Utilities** — centralized constants such as HTTP error codes
 
-Nodemon — auto-restart server on file changes (npm run dev)
+### Error Handling Strategy
 
-ESLint (Airbnb Style Guide) — enforces clean, consistent code
+- Centralized error handling using Express middleware
+- Custom HTTP status code constants
+- Handles validation errors (400), invalid IDs (CastError), not found (404), and server errors (500)
+- All error responses return a consistent JSON format with a `message` field
 
-Prettier — automatic code formatting
+### Security Foundations (Early WTWR Stages)
 
-Validator.js — validates URLs for avatar and image fields
-
-Git & GitHub — version control and continuous integration (GitHub Actions)
-
-Architecture
-
-Models — MongoDB schemas for User and ClothingItem
-
-Controllers — logic for CRUD operations and error handling
-
-Routes — clean separation for /users and /items endpoints
-
-Utilities — central storage of reusable constants (e.g., error codes)
-
-Error Handling
-
-Centralized error handler using Express middleware
-
-Custom status code constants
-
-Validation (400), Not Found (404), CastError handling, and protected 500 errors
-
-Consistent JSON responses with a message field only
-
-Security Foundations (Early Stages of WTWR Project)
-
-Temporary user authorization placeholder (req.user)
-
-Structured to support JWT-based authentication in later sprints
+- Temporary authorization middleware (`req.user`) for development
+- Structured to support JWT-based authentication in later sprints
