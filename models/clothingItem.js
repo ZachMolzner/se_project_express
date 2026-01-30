@@ -18,7 +18,8 @@ const clothingItemSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(value) {
-        return validator.isURL(value);
+        // 🔒 Require http:// or https://
+        return validator.isURL(value, { require_protocol: true });
       },
       message: "You must enter a valid URL",
     },
@@ -28,12 +29,13 @@ const clothingItemSchema = new mongoose.Schema({
     ref: "user",
     required: true,
   },
-
-  likes: {
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
-    default: [],
-  },
-
+  likes: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+      default: [],
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now,

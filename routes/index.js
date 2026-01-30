@@ -2,14 +2,24 @@ const router = require("express").Router();
 
 const userRoutes = require("./users");
 const itemRoutes = require("./clothingItems");
-const { createUser } = require("../controllers/users");
+
+const { createUser, login } = require("../controllers/users");
+const auth = require("../middlewares/auth");
+
 const { INTERNAL_SERVER_ERROR } = require("../utils/errors");
 
-// Required for Postman tests
+// Public auth routes
 router.post("/signup", createUser);
+router.post("/signin", login);
 
-router.use("/users", userRoutes);
+// Public items (GET only stays public; rest protected inside routes/clothingItems.js)
 router.use("/items", itemRoutes);
+
+// Protect everything after this line
+router.use(auth);
+
+// Protected routes
+router.use("/users", userRoutes);
 
 // Unknown routes (404)
 router.use((req, res) => {
@@ -17,7 +27,7 @@ router.use((req, res) => {
 });
 
 // Centralized error handler
-router.use((err, req, res, next) => {
+router.use((err, req, res) => {
   console.error(err);
 
   const statusCode = err.statusCode || INTERNAL_SERVER_ERROR;
@@ -27,9 +37,6 @@ router.use((err, req, res, next) => {
       : err.message;
 
   res.status(statusCode).send({ message });
-
-  // optional, keeps signature correct for Express middleware chain
-  next();
 });
 
 module.exports = router;
