@@ -12,7 +12,7 @@ const { NOT_FOUND, INTERNAL_SERVER_ERROR } = require("../utils/errors");
 router.post("/signup", createUser);
 router.post("/signin", login);
 
-// Public items (GET only stays public; rest protected inside routes/clothingItems.js)
+// Public items (GET stays public; protection handled inside clothingItems.js)
 router.use("/items", itemRoutes);
 
 // Protect everything after this line
@@ -26,8 +26,8 @@ router.use((req, res) => {
   res.status(NOT_FOUND).send({ message: "Requested resource not found" });
 });
 
-// ✅ Centralized error handler (MUST have 4 params)
-router.use((err, req, res, next) => {
+// Centralized error handler (MUST have 4 params)
+router.use((err, req, res, _next) => {
   console.error(err);
 
   const statusCode = err.statusCode || INTERNAL_SERVER_ERROR;
