@@ -38,8 +38,11 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// 🔐 Custom auth method
-userSchema.statics.findUserByCredentials = function (email, password) {
+// 🔐 Custom auth method (named function fixes ESLint)
+userSchema.statics.findUserByCredentials = function findUserByCredentials(
+  email,
+  password
+) {
   return this.findOne({ email })
     .select("+password")
     .then((user) => {
