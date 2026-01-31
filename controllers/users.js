@@ -16,13 +16,20 @@ const { JWT_SECRET = "dev-secret" } = process.env;
 module.exports.createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
-  bcrypt
+  // ✅ Guard: missing required fields should be 400, not 500
+  if (!email || !password) {
+    return res
+      .status(BAD_REQUEST)
+      .send({ message: "Email and password are required" });
+  }
+
+  return bcrypt
     .hash(password, 10)
     .then((hash) => User.create({ name, avatar, email, password: hash }))
     .then((user) => {
       const userObj = user.toObject();
       delete userObj.password;
-      res.status(201).send(userObj);
+      return res.status(201).send(userObj);
     })
     .catch((err) => {
       if (err.code === 11000) {
@@ -46,16 +53,25 @@ module.exports.createUser = (req, res) => {
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
-  User.findUserByCredentials(email, password)
+  // ✅ Guard: malformed input should be 400, not 401
+  if (!email || !password) {
+    return res
+      .status(BAD_REQUEST)
+      .send({ message: "Email and password are required" });
+  }
+
+  return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
-      res.send({ token });
+      return res.send({ token });
     })
     .catch((err) => {
       console.error(err);
-      res.status(UNAUTHORIZED).send({ message: "Incorrect email or password" });
+      return res
+        .status(UNAUTHORIZED)
+        .send({ message: "Incorrect email or password" });
     });
 };
 
