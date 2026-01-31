@@ -1,68 +1,50 @@
-🛠 Technologies & Techniques Used
-Back-End Stack
+## 🛠 Technologies & Techniques Used
 
-Node.js — server-side JavaScript runtime
+### Back-End Stack
 
-Express.js — framework for building RESTful APIs and handling routing
+- **Node.js** — server-side JavaScript runtime
+- **Express.js** — framework for building RESTful APIs and handling routing
+- **MongoDB** — NoSQL database for storing users and clothing items
+- **Mongoose** — ODM for defining schemas, models, and validation logic
 
-MongoDB — NoSQL database for storing users and clothing items
+### Development Tools
 
-Mongoose — ODM for defining schemas, models, and validation logic
+- **Nodemon** — automatic server restart during development (`npm run dev`)
+- **ESLint (Airbnb Style Guide)** — enforces clean and consistent code standards
+- **Prettier** — automatic code formatting
+- **Validator.js** — validates URL and email fields (avatars, item images, and user emails)
+- **Git & GitHub** — version control and CI via GitHub Actions
 
-Development Tools
+### Application Architecture
 
-Nodemon — automatic server restart during development (npm run dev)
+- **Models** — MongoDB schemas for `User` and `ClothingItem`
+- **Controllers** — business logic for authentication, CRUD operations, and ownership checks
+- **Routes** — clean separation of `/signup`, `/signin`, `/users`, and `/items` endpoints
+- **Utilities** — centralized constants such as HTTP error codes and JWT configuration
 
-ESLint (Airbnb Style Guide) — enforces clean and consistent code standards
+### Error Handling Strategy
 
-Prettier — automatic code formatting
+- Centralized error handling using Express middleware
+- Custom HTTP status code constants
+- Handles:
+  - Validation errors (**400**)
+  - Authentication and authorization errors (**401 / 403**)
+  - Not found errors (**404**)
+  - Duplicate resource conflicts (**409**)
+  - Server errors (**500**)
+- All error responses return a consistent JSON format with a `message` field
 
-Validator.js — validates URL and email fields (avatars, item images, and user emails)
+### Security Foundations
 
-Git & GitHub — version control and CI via GitHub Actions
+- Password hashing using **bcryptjs**
+- JWT-based authentication and protected routes
+- Authorization middleware to secure user and item actions
+- Ownership checks to prevent users from deleting items they do not own
 
-Application Architecture
+---
 
-Models — MongoDB schemas for User and ClothingItem
+## 🎥 Project Pitch Video
 
-Controllers — business logic for authentication, CRUD operations, and ownership checks
+👉 **[Watch the Project Pitch Video](https://drive.google.com/file/d/1rVpPuUCEVEoG9jydfxAcBQr1TMXC9g_m/view?usp=drive_link)**
 
-Routes — clean separation of /signup, /signin, /users, and /items endpoints
-
-Utilities — centralized constants such as HTTP error codes and JWT configuration
-
-Error Handling Strategy
-
-Centralized error handling using Express middleware
-
-Custom HTTP status code constants
-
-Graceful handling of:
-
-Validation errors (400)
-
-Authentication/authorization errors (401 / 403)
-
-Not found errors (404)
-
-Duplicate resource conflicts (409)
-
-Server errors (500)
-
-All error responses return a consistent JSON format with a message field
-
-Security Foundations
-
-Password hashing using bcryptjs
-
-JWT-based authentication with protected routes
-
-Authorization middleware to secure user and item actions
-
-Ownership checks to prevent users from deleting items they do not own
-
-🎥 Project Pitch Video
-
-👉 Watch the Project Pitch Video
-
-In this video, I walk through the goals of the WTWR back-end project, explain how authentication and authorization were implemented, discuss challenges I faced during development, and reflect on lessons learned and future improvements.
+In this video, I explain the purpose of the WTWR back-end project, walk through my authentication and authorization implementation, discuss challenges I faced, and reflect on lessons learned and potential improvements.
