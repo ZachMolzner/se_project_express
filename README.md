@@ -1,5 +1,7 @@
 ## 🛠 Technologies & Techniques Used
 
+**WTWR (What To Wear?) — Back-End API**
+
 ### Back-End Stack
 
 - **Node.js** — server-side JavaScript runtime
@@ -45,6 +47,6 @@
 
 ## 🎥 Project Pitch Video
 
-👉 **[Watch the Project Pitch Video](https://drive.google.com/file/d/1rVpPuUCEVEoG9jydfxAcBQr1TMXC9g_m/view?usp=drive_link)**
+👉 **[Watch the Project Pitch Video](https://drive.google.com/file/d/1rVpPuUCEVEoG9jydfxAcBQr1TMXC9g_m/view)**
 
-In this video, I explain the purpose of the WTWR back-end project, walk through my authentication and authorization implementation, discuss challenges I faced, and reflect on lessons learned and potential improvements.
+In this video, I explain the purpose of the WTWR back-end project, walk through my authentication and authorization implementation, discuss challenges encountered during development, and reflect on lessons learned and potential improvements.
