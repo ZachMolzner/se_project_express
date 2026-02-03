@@ -12,7 +12,7 @@ const { NOT_FOUND, INTERNAL_SERVER_ERROR } = require("../utils/errors");
 router.post("/signup", createUser);
 router.post("/signin", login);
 
-// Public items (GET stays public; protection handled inside clothingItems.js)
+// Public items router (GET is public; rest protected inside clothingItems.js)
 router.use("/items", itemRoutes);
 
 // Protect everything after this line
@@ -21,12 +21,12 @@ router.use(auth);
 // Protected routes
 router.use("/users", userRoutes);
 
-// Unknown routes (404)
+// 404
 router.use((req, res) => {
   res.status(NOT_FOUND).send({ message: "Requested resource not found" });
 });
 
-// Centralized error handler (MUST have 4 params)
+// Error handler
 router.use((err, req, res, _next) => {
   console.error(err);
 

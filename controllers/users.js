@@ -12,11 +12,13 @@ const {
 
 const { JWT_SECRET = "dev-secret" } = process.env;
 
-// POST /signup
+/**
+ * POST /signup
+ * Registers a new user
+ */
 module.exports.createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
-  // ✅ Guard: missing required fields should be 400, not 500
   if (!email || !password) {
     return res
       .status(BAD_REQUEST)
@@ -25,7 +27,14 @@ module.exports.createUser = (req, res) => {
 
   return bcrypt
     .hash(password, 10)
-    .then((hash) => User.create({ name, avatar, email, password: hash }))
+    .then((hash) =>
+      User.create({
+        name,
+        avatar,
+        email,
+        password: hash,
+      })
+    )
     .then((user) => {
       const userObj = user.toObject();
       delete userObj.password;
@@ -49,11 +58,13 @@ module.exports.createUser = (req, res) => {
     });
 };
 
-// POST /signin
+/**
+ * POST /signin
+ * Authorizes a user and returns JWT
+ */
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
-  // ✅ Guard: malformed input should be 400, not 401
   if (!email || !password) {
     return res
       .status(BAD_REQUEST)
@@ -65,6 +76,7 @@ module.exports.login = (req, res) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
+
       return res.send({ token });
     })
     .catch((err) => {
@@ -75,7 +87,10 @@ module.exports.login = (req, res) => {
     });
 };
 
-// GET /users/me
+/**
+ * GET /users/me
+ * Returns current authenticated user
+ */
 module.exports.getCurrentUser = (req, res) => {
   User.findById(req.user._id)
     .then((user) => {
@@ -84,7 +99,11 @@ module.exports.getCurrentUser = (req, res) => {
           .status(NOT_FOUND)
           .send({ message: "User with the specified ID not found" });
       }
-      return res.send(user);
+
+      const userObj = user.toObject();
+      delete userObj.password;
+
+      return res.send(userObj);
     })
     .catch((err) => {
       console.error(err);
@@ -101,7 +120,10 @@ module.exports.getCurrentUser = (req, res) => {
     });
 };
 
-// PATCH /users/me
+/**
+ * PATCH /users/me
+ * Updates name and avatar
+ */
 module.exports.updateUser = (req, res) => {
   const { name, avatar } = req.body;
 
@@ -116,7 +138,11 @@ module.exports.updateUser = (req, res) => {
           .status(NOT_FOUND)
           .send({ message: "User with the specified ID not found" });
       }
-      return res.send(user);
+
+      const userObj = user.toObject();
+      delete userObj.password;
+
+      return res.send(userObj);
     })
     .catch((err) => {
       console.error(err);
