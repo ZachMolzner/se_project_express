@@ -1,95 +1,88 @@
 const ClothingItem = require("../models/clothingItem");
-const {
-  BAD_REQUEST,
-  NOT_FOUND,
-  FORBIDDEN,
-  INTERNAL_SERVER_ERROR,
-} = require("../utils/errors");
 
-const handleError = (err, res) => {
-  console.error(err);
+const BadRequestError = require("../errors/bad-request-error");
+const NotFoundError = require("../errors/not-found-error");
+const ForbiddenError = require("../errors/forbidden-error");
 
-  if (err.name === "CastError" || err.name === "ValidationError") {
-    return res
-      .status(BAD_REQUEST)
-      .send({ message: "Invalid data passed to the request" });
-  }
-
-  if (err.statusCode === NOT_FOUND) {
-    return res.status(NOT_FOUND).send({ message: err.message });
-  }
-
-  if (err.statusCode === FORBIDDEN) {
-    return res.status(FORBIDDEN).send({ message: err.message });
-  }
-
-  return res
-    .status(INTERNAL_SERVER_ERROR)
-    .send({ message: "An error has occurred on the server" });
-};
-
-module.exports.getItems = (req, res) => {
+module.exports.getItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.send(items))
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
-module.exports.createItem = (req, res) => {
+module.exports.createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
   const owner = req.user._id;
 
   ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => res.status(201).send(item))
-    .catch((err) => handleError(err, res));
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        return next(new BadRequestError("Invalid data passed to the request"));
+      }
+      return next(err);
+    });
 };
 
-module.exports.deleteItem = (req, res) => {
+module.exports.deleteItem = (req, res, next) => {
   const { itemId } = req.params;
 
   ClothingItem.findById(itemId)
-    .orFail(() => {
-      const error = new Error("Item with the specified ID not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
-    })
+    .orFail(() => new NotFoundError("Item with the specified ID not found"))
     .then((item) => {
-      if (item.owner.toString() !== req.user._id) {
-        const error = new Error("Forbidden");
-        error.statusCode = FORBIDDEN;
-        throw error;
+      // owner might be ObjectId, user._id might be string depending on your auth middleware
+      const ownerId = item.owner.toString();
+      const userId = req.user._id.toString
+        ? req.user._id.toString()
+        : req.user._id;
+
+      if (ownerId !== userId) {
+        throw new ForbiddenError("Forbidden");
       }
+
       return ClothingItem.findByIdAndDelete(itemId);
     })
     .then((deletedItem) => res.send(deletedItem))
-    .catch((err) => handleError(err, res));
+    .catch((err) => {
+      if (err.name === "CastError") {
+        return next(new BadRequestError("Invalid data passed to the request"));
+      }
+      return next(err);
+    });
 };
 
-module.exports.likeItem = (req, res) => {
+module.exports.likeItem = (req, res, next) => {
+  const { itemId } = req.params;
+
   ClothingItem.findByIdAndUpdate(
-    req.params.itemId,
+    itemId,
     { $addToSet: { likes: req.user._id } },
     { new: true }
   )
-    .orFail(() => {
-      const error = new Error("Item with the specified ID not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
-    })
+    .orFail(() => new NotFoundError("Item with the specified ID not found"))
     .then((item) => res.send(item))
-    .catch((err) => handleError(err, res));
+    .catch((err) => {
+      if (err.name === "CastError") {
+        return next(new BadRequestError("Invalid data passed to the request"));
+      }
+      return next(err);
+    });
 };
 
-module.exports.dislikeItem = (req, res) => {
+module.exports.dislikeItem = (req, res, next) => {
+  const { itemId } = req.params;
+
   ClothingItem.findByIdAndUpdate(
-    req.params.itemId,
+    itemId,
     { $pull: { likes: req.user._id } },
     { new: true }
   )
-    .orFail(() => {
-      const error = new Error("Item with the specified ID not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
-    })
+    .orFail(() => new NotFoundError("Item with the specified ID not found"))
     .then((item) => res.send(item))
-    .catch((err) => handleError(err, res));
+    .catch((err) => {
+      if (err.name === "CastError") {
+        return next(new BadRequestError("Invalid data passed to the request"));
+      }
+      return next(err);
+    });
 };

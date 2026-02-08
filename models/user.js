@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 
+const UnauthorizedError = require("../errors/unauthorized-error");
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -14,7 +16,6 @@ const userSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(value) {
-        // 🔒 Require http:// or https://
         return validator.isURL(value, { require_protocol: true });
       },
       message: "You must enter a valid URL",
@@ -38,7 +39,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// 🔐 Custom auth method (named function fixes ESLint)
+//  Custom auth method
 userSchema.statics.findUserByCredentials = function findUserByCredentials(
   email,
   password
@@ -47,12 +48,12 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(
     .select("+password")
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error("Incorrect email or password"));
+        throw new UnauthorizedError("Incorrect email or password");
       }
 
       return bcrypt.compare(password, user.password).then((matched) => {
         if (!matched) {
-          return Promise.reject(new Error("Incorrect email or password"));
+          throw new UnauthorizedError("Incorrect email or password");
         }
         return user;
       });

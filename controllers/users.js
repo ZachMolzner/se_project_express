@@ -2,13 +2,10 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
-const {
-  BAD_REQUEST,
-  NOT_FOUND,
-  CONFLICT,
-  UNAUTHORIZED,
-  INTERNAL_SERVER_ERROR,
-} = require("../utils/errors");
+const BadRequestError = require("../errors/bad-request-error");
+const NotFoundError = require("../errors/not-found-error");
+const ConflictError = require("../errors/conflict-error");
+const UnauthorizedError = require("../errors/unauthorized-error");
 
 const { JWT_SECRET = "dev-secret" } = process.env;
 
@@ -16,13 +13,11 @@ const { JWT_SECRET = "dev-secret" } = process.env;
  * POST /signup
  * Registers a new user
  */
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   if (!email || !password) {
-    return res
-      .status(BAD_REQUEST)
-      .send({ message: "Email and password are required" });
+    return next(new BadRequestError("Email and password are required"));
   }
 
   return bcrypt
@@ -38,23 +33,18 @@ module.exports.createUser = (req, res) => {
     .then((user) => {
       const userObj = user.toObject();
       delete userObj.password;
-      return res.status(201).send(userObj);
+      res.status(201).send(userObj);
     })
     .catch((err) => {
       if (err.code === 11000) {
-        return res.status(CONFLICT).send({ message: "Email already exists" });
+        return next(new ConflictError("Email already exists"));
       }
 
       if (err.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "Invalid data passed to the request" });
+        return next(new BadRequestError("Invalid data passed to the request"));
       }
 
-      console.error(err);
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
+      return next(err);
     });
 };
 
@@ -62,13 +52,11 @@ module.exports.createUser = (req, res) => {
  * POST /signin
  * Authorizes a user and returns JWT
  */
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res
-      .status(BAD_REQUEST)
-      .send({ message: "Email and password are required" });
+    return next(new BadRequestError("Email and password are required"));
   }
 
   return User.findUserByCredentials(email, password)
@@ -77,46 +65,33 @@ module.exports.login = (req, res) => {
         expiresIn: "7d",
       });
 
-      return res.send({ token });
+      res.send({ token });
     })
-    .catch((err) => {
-      console.error(err);
-      return res
-        .status(UNAUTHORIZED)
-        .send({ message: "Incorrect email or password" });
-    });
+    .catch(() => next(new UnauthorizedError("Incorrect email or password")));
 };
 
 /**
  * GET /users/me
  * Returns current authenticated user
  */
-module.exports.getCurrentUser = (req, res) => {
+module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        return res
-          .status(NOT_FOUND)
-          .send({ message: "User with the specified ID not found" });
+        throw new NotFoundError("User with the specified ID not found");
       }
 
       const userObj = user.toObject();
       delete userObj.password;
 
-      return res.send(userObj);
+      res.send(userObj);
     })
     .catch((err) => {
-      console.error(err);
-
       if (err.name === "CastError") {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "Invalid data passed to the request" });
+        return next(new BadRequestError("Invalid data passed to the request"));
       }
 
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
+      return next(err);
     });
 };
 
@@ -124,7 +99,7 @@ module.exports.getCurrentUser = (req, res) => {
  * PATCH /users/me
  * Updates name and avatar
  */
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, avatar } = req.body;
 
   User.findByIdAndUpdate(
@@ -134,27 +109,19 @@ module.exports.updateUser = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        return res
-          .status(NOT_FOUND)
-          .send({ message: "User with the specified ID not found" });
+        throw new NotFoundError("User with the specified ID not found");
       }
 
       const userObj = user.toObject();
       delete userObj.password;
 
-      return res.send(userObj);
+      res.send(userObj);
     })
     .catch((err) => {
-      console.error(err);
-
       if (err.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "Invalid data passed to the request" });
+        return next(new BadRequestError("Invalid data passed to the request"));
       }
 
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
+      return next(err);
     });
 };

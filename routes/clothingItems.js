@@ -9,16 +9,18 @@ const {
   dislikeItem,
 } = require("../controllers/clothingItems");
 
+const { validateItemBody, validateId } = require("../middlewares/validation");
+
 // Public
 router.get("/", getItems);
 
 // Protect everything below
 router.use(auth);
 
-// Protected
-router.post("/", createItem);
-router.delete("/:itemId", deleteItem);
-router.put("/:itemId/likes", likeItem);
-router.delete("/:itemId/likes", dislikeItem);
+// Protected + VALIDATED
+router.post("/", validateItemBody, createItem);
+router.delete("/:itemId", validateId, deleteItem);
+router.put("/:itemId/likes", validateId, likeItem);
+router.delete("/:itemId/likes", validateId, dislikeItem);
 
 module.exports = router;
