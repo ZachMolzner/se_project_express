@@ -35,8 +35,16 @@ app.use(
   })
 );
 
-//  request logger — BEFORE routes
+// request logger — BEFORE routes
 app.use(requestLogger);
+
+//  CRASH TEST ROUTE (required for review)
+// Must be BEFORE /signin and /signup
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
 
 mongoose
   .connect(MONGO_URL)
@@ -46,7 +54,7 @@ mongoose
 // routes
 app.use("/", routes);
 
-//  error logger — AFTER routes
+// error logger — AFTER routes
 app.use(errorLogger);
 
 // celebrate validation errors
