@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -14,14 +16,20 @@ const app = express();
 
 app.use(express.json());
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://climatecloset.jumpingcrab.com",
+  "https://www.climatecloset.jumpingcrab.com",
+];
+
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: allowedOrigins,
     credentials: true,
   })
 );
 
-// ✅ request logger — BEFORE routes
+//  request logger — BEFORE routes
 app.use(requestLogger);
 
 mongoose
@@ -32,7 +40,7 @@ mongoose
 // routes
 app.use("/", routes);
 
-// ✅ error logger — AFTER routes
+//  error logger — AFTER routes
 app.use(errorLogger);
 
 // celebrate validation errors
