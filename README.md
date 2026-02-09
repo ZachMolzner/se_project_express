@@ -68,6 +68,6 @@ The API handles authentication, user management, clothing item storage, and auth
 
 ## 🎥 Project Pitch Video
 
-👉 **[Watch the Project Pitch Video](https://drive.google.com/file/d/1rVpPuUCEVEoG9jydfxAcBQr1TMXC9g_m/view)**
+👉 **[Watch the Project Pitch Video](https://drive.google.com/file/d/1Et98KtE1MSfM5I1uwRThTkCfwJWI9duF/view?usp=drive_link)**
 
 In this video, I explain the purpose of the WTWR full-stack project, walk through authentication and authorization logic, demonstrate deployment, discuss challenges encountered, and reflect on lessons learned and potential improvements.
