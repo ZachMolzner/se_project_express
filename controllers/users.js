@@ -33,6 +33,7 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => {
       const userObj = user.toObject();
       delete userObj.password;
+
       res.status(201).send(userObj);
     })
     .catch((err) => {
@@ -67,7 +68,13 @@ module.exports.login = (req, res, next) => {
 
       res.send({ token });
     })
-    .catch(() => next(new UnauthorizedError("Incorrect email or password")));
+    .catch((err) => {
+      if (err.message === "Incorrect email or password") {
+        return next(new UnauthorizedError("Incorrect email or password"));
+      }
+
+      return next(err); // 500 handled by centralized error middleware
+    });
 };
 
 /**

@@ -24,7 +24,7 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: function (origin, callback) {
+    origin(origin, callback) {
       // allow Postman/curl (no origin) and allowed origins
       if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
@@ -38,7 +38,7 @@ app.use(
 // request logger — BEFORE routes
 app.use(requestLogger);
 
-//  CRASH TEST ROUTE (required for review)
+// CRASH TEST ROUTE (required for review)
 // Must be BEFORE /signin and /signup
 app.get("/crash-test", () => {
   setTimeout(() => {
